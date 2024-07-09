@@ -1,0 +1,40 @@
+pip install tk
+import PyPDF2
+import tkinter as tk
+from tkinter import filedialog
+import io
+
+def pdf_to_text(pdf_content, txt_path):
+    pdf_stream = io.BytesIO(pdf_content)
+    reader = PyPDF2.PdfReader(pdf_stream)
+    num_pages = len(reader.pages)
+    
+    with open(txt_path, 'w', encoding='utf-8') as txt_file:
+        for page_num in range(num_pages):
+            page = reader.pages[page_num]
+            text = page.extract_text()
+            txt_file.write(text)
+
+def select_and_convert_pdf():
+    root = tk.Tk()
+    root.withdraw() # Tkinter penceresini gizle
+
+    pdf_path = filedialog.askopenfilename(title="PDF Dosyasını Seçin", filetypes=[("PDF Dosyaları", "*.pdf")])
+    if not pdf_path:
+        print("PDF dosyası seçilmedi.")
+        return
+    
+    
+    with open(pdf_path, 'rb') as f: #PDF dosyasını açar
+        pdf_content = f.read()
+    
+    # Metin dosyasının adını belirleriz
+    txt_path = pdf_path.replace('.pdf', '.txt')
+    
+    # PDFten metin dosyasına dönüştürme işlemini yaparız
+    pdf_to_text(pdf_content, txt_path)
+    
+    print(f"PDF dosyası '{txt_path}' olarak kaydedildi.")
+
+# Fonksiyonu çağırarak dosya seçme işlemini başlatır
+select_and_convert_pdf()
